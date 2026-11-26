@@ -176,6 +176,9 @@ function initWork() {
       start: 'top 60%',
       end: 'bottom 60%',
       onToggle: (self) => { if (self.isActive) setActive(i); },
+      // Fast jumps can skip a toggle: snap to the first or last entry at the ends.
+      onLeaveBack: i === 0 ? () => setActive(0) : undefined,
+      onLeave: i === entries.length - 1 ? () => setActive(i) : undefined,
     }));
     ScrollTrigger.refresh();
   };
