@@ -73,7 +73,7 @@ body {
 @media (min-width: 768px) { body { font-size: 19px; } }
 img { display: block; max-width: 100%; height: auto; }
 h1, h2, h3, p, ul, ol, figure { margin: 0; }
-ul { padding: 0; list-style: none; }
+ul, ol { padding: 0; list-style: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
 a { color: inherit; text-decoration: none; }
 
@@ -401,6 +401,308 @@ html.lenis, html.lenis body { height: auto; }
 [data-enter="3"] { --i: 3; }
 [data-enter="4"] { --i: 4; }
 .hero-visual.enter { animation-duration: var(--dur-slow); }
+
+/* ==========================================================================
+   Sections (shared)
+   ========================================================================== */
+.section { padding-block: var(--section-space) 0; }
+.section .heading { max-width: 22ch; }
+@media (min-width: 1024px) { .section .heading { max-width: none; } }
+.book .heading .muted { display: block; }
+.section > .container > .heading { margin-bottom: 48px; }
+@media (min-width: 768px) { .section > .container > .heading { margin-bottom: 64px; } }
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--surface);
+  border-radius: var(--radius-panel);
+}
+
+/* Section reveal: only hidden when JS is running and motion is allowed */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+    transition-delay: calc(var(--reveal-i, 0) * var(--stagger));
+  }
+  .js [data-reveal].is-in { opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   About: bento, 4 cells
+   ========================================================================== */
+.bento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);   /* under 768: single column, photo first */
+  gap: 16px;
+}
+.bento-cell { border-radius: var(--radius-panel); }
+.bento-photo { aspect-ratio: 4 / 5; overflow: hidden; }
+.bento-photo img { width: 100%; height: 100%; object-fit: cover; }
+.bento-stat {
+  background: var(--surface);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 200px;
+}
+.stat-value {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.stat-label { margin-top: 12px; color: var(--text-muted); }
+.bento-text {
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  padding: 32px;
+  display: flex;
+  align-items: flex-end;
+}
+.bento-text p { max-width: 46ch; }
+
+@media (min-width: 768px) {
+  .bento {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 20px;
+  }
+  .bento-photo { grid-row: span 2; aspect-ratio: auto; min-height: 520px; }
+  .bento-text { grid-column: 1 / -1; }
+  .stat-value { font-size: 64px; }
+}
+@media (min-width: 1024px) {
+  .bento {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 620px;
+  }
+  .bento-photo { grid-row: 1 / 3; grid-column: 1; min-height: 0; }
+  .bento-text { grid-column: 2 / 4; grid-row: 2; padding: 40px; }
+  .bento-stat { padding: 40px; }
+}
+
+/* ==========================================================================
+   Work: stacked by default; sticky split when JS adds .is-pinned (desktop)
+   ========================================================================== */
+.work-list { display: grid; gap: 64px; }
+.work-media { aspect-ratio: 16 / 10; border-radius: var(--radius-panel); overflow: hidden; }
+.work-media img { width: 100%; height: 100%; object-fit: cover; }
+.work-card {
+  margin-top: 16px;
+  background: var(--surface);
+  border-radius: var(--radius-panel);
+  padding: 28px;
+  transition: transform 600ms var(--ease-out);
+}
+.work-org { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+.work-name {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+.work-role { margin-top: 6px; font-weight: 500; }
+.work-desc { margin-top: 16px; color: var(--text-muted); max-width: 52ch; }
+.work-outcome {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--hairline);
+  max-width: 52ch;
+}
+.work-outcome strong { font-weight: 600; }
+.work-stage { display: none; }
+
+@media (min-width: 768px) {
+  .work-card { padding: 36px; }
+  .work-name { font-size: 28px; }
+}
+/* Stacked fallback on wide screens (no JS / reduced motion): image beside text */
+@media (min-width: 1024px) {
+  .work-layout:not(.is-pinned) .work-entry {
+    display: grid;
+    grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+    gap: 32px;
+    align-items: center;
+  }
+  .work-layout:not(.is-pinned) .work-card { margin-top: 0; }
+}
+
+/* Pinned split (only when JS enabled it: >=1024px, motion allowed) */
+.work-layout.is-pinned {
+  display: grid;
+  grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  gap: 64px;
+  align-items: start;
+}
+.work-layout.is-pinned .work-stage {
+  display: block;
+  position: sticky;
+  top: calc(var(--header-h) + 40px);
+}
+.work-layout.is-pinned .work-media { display: none; }
+.work-layout.is-pinned .work-list { gap: 24px; padding-bottom: 8vh; }
+.work-layout.is-pinned .work-card {
+  margin-top: 0;
+  min-height: 52vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stage-frame {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  background: var(--surface);
+}
+.stage-layer,
+.stage-caption {
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out), transform 900ms var(--ease-out);
+}
+.stage-layer { position: absolute; inset: 0; transform: scale(1.04); }
+.stage-layer > * { width: 100%; height: 100%; object-fit: cover; }
+.stage-layer.is-active { opacity: 1; transform: none; }
+.stage-captions { position: relative; margin-top: 28px; min-height: 150px; }
+.stage-caption { position: absolute; inset: 0 0 auto 0; transform: translateY(8px); }
+.stage-caption.is-active { opacity: 1; transform: none; }
+.stage-name {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  max-width: 16ch;
+}
+.stage-org { margin-top: 10px; font-size: 19px; color: var(--text-muted); }
+
+/* ==========================================================================
+   Book a session
+   ========================================================================== */
+.book-inner { max-width: calc(640px + var(--gutter) * 2); }
+.book .heading { margin-top: 16px; }
+.book-lede { margin-top: 20px; }
+.form-panel {
+  margin-top: 40px;
+  background: var(--surface);
+  border-radius: var(--radius-panel);
+  padding: 24px;
+  display: grid;
+  gap: 24px;
+}
+@media (min-width: 640px) { .form-panel { padding: 40px; } }
+
+.field { display: grid; gap: 8px; }
+.field label { font-size: 15px; font-weight: 500; }
+.optional { font-weight: 400; color: var(--text-muted); }
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--text-meta);
+  border-radius: var(--radius-input);
+  font-size: 17px;
+  line-height: 1.4;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.field textarea { resize: vertical; min-height: 132px; }
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+  border-radius: var(--radius-input);
+}
+.field ::placeholder { color: var(--text-muted); opacity: 1; }
+.field [aria-invalid="true"] { border-color: var(--text); border-width: 2px; padding: 11px 15px; }
+.select-wrap { position: relative; }
+.select-wrap select { padding-right: 44px; cursor: pointer; }
+.select-wrap .ph {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+.field-help { font-size: 14px; color: var(--text-muted); }
+.field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+.field-error[hidden] { display: none; }
+.field-error .ph { font-size: 18px; margin-top: 1px; }
+.btn--submit { width: 100%; margin-top: 8px; }
+@media (min-width: 640px) { .btn--submit { width: auto; justify-self: start; } }
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.site-footer {
+  margin-top: var(--section-space);
+  border-top: 1px solid var(--hairline);
+  background: var(--bg);
+  padding-block: 40px 32px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);   /* under 768: stacked */
+  gap: 24px;
+}
+.footer-name { font-weight: 600; }
+.footer-links { display: grid; gap: 12px; }
+.footer-links a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.footer-links a::after {
+  content: "";
+  position: absolute;
+  left: 26px; right: 0; bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.footer-links a:hover::after { transform: scaleX(1); }
+.footer-links .ph { font-size: 18px; }
+.footer-copy { margin-top: 40px; }
+@media (min-width: 768px) {
+  .footer-grid { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+  .footer-links { grid-auto-flow: column; gap: 32px; }
+}
+
+/* ==========================================================================
+   Thank-you page
+   ========================================================================== */
+.thanks {
+  min-height: calc(100dvh - var(--header-h) - 160px);
+  display: flex;
+  align-items: center;
+  padding-block: 96px;
+}
+.thanks .btn { margin-top: 40px; }
 
 /* ==========================================================================
    Reduced motion: everything visible, nothing moves
