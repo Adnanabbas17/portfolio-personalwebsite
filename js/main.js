@@ -3,7 +3,10 @@
 import { initMotion, prefersReducedMotion, isDesktopPointer, loadStylesheet, LIBS } from './motion.js';
 
 document.documentElement.classList.add('js');
-loadStylesheet(LIBS.phosphor);
+
+// Icons are decorative; load them after the page has painted so they never block rendering.
+if (document.readyState === 'complete') loadStylesheet(LIBS.phosphor);
+else window.addEventListener('load', () => loadStylesheet(LIBS.phosphor), { once: true });
 
 /* ---------- Header: hairline + blur once the page scrolls ---------- */
 function initHeader() {
